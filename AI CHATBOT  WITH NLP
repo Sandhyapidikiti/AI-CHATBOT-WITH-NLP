@@ -1,0 +1,64 @@
+pip install nltk
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+import nltk
+nltk.download('punkt_tab')
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
+# Download 'punkt_tab' data
+nltk.download('punkt_tab')
+
+intents = {
+    "greeting": ["hello", "hi", "hey", "good morning", "good evening"],
+    "goodbye": ["bye", "see you", "take care"],
+    "thanks": ["thanks", "thank you"],
+    "about": ["who are you", "what is your name"],
+    "help": ["can you help me", "i need help", "help"]
+}
+
+responses = {
+    "greeting": "Hello! How can I assist you today?",
+    "goodbye": "Goodbye! Have a great day!",
+    "thanks": "You're welcome!",
+    "about": "I’m CodTech’s friendly assistant chatbot!",
+    "help": "Sure, I’m here to help. Ask me anything!"
+}
+
+def preprocess(text):
+    """
+    Tokenizes and lemmatizes the input text.
+    """
+    tokens = word_tokenize(text.lower())
+    lemmatizer = WordNetLemmatizer()
+    lemmas = [lemmatizer.lemmatize(token) for token in tokens]
+    return lemmas
+
+def classify_intent(user_input):
+    lemmas = preprocess(user_input)
+    for intent, patterns in intents.items():
+        for pattern in patterns:
+            pattern_lemmas = preprocess(pattern)
+            if set(pattern_lemmas).intersection(set(lemmas)):
+                return intent
+    return "unknown"
+
+def get_response(user_input):
+    intent = classify_intent(user_input)
+    return responses.get(intent, "I'm not sure how to respond to that.")
+
+def chatbot():
+    print("🤖 Welcome to CodTech Chatbot! Type 'exit' to end.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() in ["exit", "quit"]:
+            print("Bot: Bye! 👋")
+            break
+        response = get_response(user_input)
+        print("Bot:", response)
+
+if __name__ == "__main__":
+    chatbot()
